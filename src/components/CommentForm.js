@@ -1,31 +1,26 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import uuid from 'uuidv4';
 
 export default class CommentForm extends Component {
   constructor(props) {
     super(props);
-  
+
     this.state = {
-       comment: ''
-    }
+      comment: ''
+    };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   handleChange(evt) {
     this.setState({ [evt.target.name]: evt.target.value });
-
-
   }
 
   handleSubmit(evt) {
     evt.preventDefault();
-    this.props.addComment({...this.state, id: uuid()})
-
-
+    this.props.addComment({id: this.props.id, text: this.state.comment });
   }
 
-  
   render() {
     return (
       <div>
@@ -39,6 +34,6 @@ export default class CommentForm extends Component {
           <button className='btn btn-primary'>Add</button>
         </form>
       </div>
-    )
+    );
   }
 }

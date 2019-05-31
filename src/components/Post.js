@@ -1,64 +1,71 @@
 import React, { Component } from 'react';
-import NewPost from './NewPost';
+import PostForm from './PostForm';
 import CommentForm from './CommentForm';
 import Comment from './Comment';
+import uuid from 'uuidv4';
 
 export default class Post extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      editing: false,
-      comments: []
-    }
+      editing: false
+    };
     this.deletePost = this.deletePost.bind(this);
     this.editPost = this.editPost.bind(this);
     this.addComment = this.addComment.bind(this);
     this.removeComment = this.removeComment.bind(this);
   }
 
+  componentDidMount() {
+    this.props.getSinglePostFromAPI(this.props.match.params.id);
+  }
+
   deletePost() {
-    this.props.removePost(this.props.match.params.id);
+    this.props.deletePostFromAPI(this.props.match.params.id);
     this.props.history.push('/');
   }
 
   editPost() {
     this.setState({
       editing: true
-    })
+    });
   }
 
-  addComment(comment){
-    this.setState({
-      comments: [...this.state.comments, comment]
-    })
+  addComment(commentObj) {
+    this.props.addCommentToAPI(commentObj);
   }
 
-  removeComment(commentId){
-    let filteredComments = this.state.comments.filter(comment => comment.id !== commentId);
-    this.setState({
-      comments: filteredComments
-    })
+  removeComment(postId, commentId) {
+    this.props.deleteCommentFromAPI(postId, commentId);
   }
 
   render() {
-    let currentPost = this.props.posts.filter(post => post.id === this.props.match.params.id);
-    let postPage =
-      <div>
-        <h1>{currentPost[0].title}</h1>
-        <p>{currentPost[0].description}</p>
-        <p>{currentPost[0].body}</p>
-        <button onClick={this.editPost} className='btn btn-primary'>Edit</button>
-        <button onClick={this.deletePost} className='btn btn-danger'>Delete</button>
-        {this.state.comments.map(comment => 
-          <Comment removeComment={this.removeComment} {...comment} />
-          
-        )}
-        <CommentForm addComment={this.addComment}/>
-      </div>
-  
-    let page = this.state.editing ? <NewPost currentPost={currentPost} addPost={this.props.addPost} history={this.props.history} /> :  postPage
+ 
+    let currentPost;
+    let postPage = <h1>Loading...</h1>;
+    if (this.props.currentPost) {
+      currentPost = this.props.currentPost;
+      postPage =
+        <div>
+          <h1>{currentPost.title}</h1>
+          <p>{currentPost.description}</p>
+          <p>{currentPost.body}</p>
+          <button onClick={this.editPost} className='btn btn-primary'>Edit</button>
+          <button onClick={this.deletePost} className='btn btn-danger'>Delete</button>
+          <br></br>
+          {currentPost.comments.map(comment => {
+            let id = uuid();
+            return <Comment removeComment={this.removeComment} postId={this.props.match.params.id} id={comment.id} key={id} {...comment} />;
+          }
+          )}
+          <CommentForm addComment={this.addComment} id={this.props.match.params.id}/>
+        </div>;
+    }
+
+    let editPage = <PostForm currentPost={currentPost} savePost={this.props.savePost} {...this.props} />;
+
     return (
-      page
-    )
+      this.state.editing ? editPage : postPage
+    );
   }
 }

@@ -1,49 +1,45 @@
 import React, { Component } from 'react';
 import uuid from 'uuidv4';
-export default class NewPost extends Component {
+export default class PostForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
       title: '',
       description: '',
       body: ''
-    }
+    };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
 
   handleChange(evt) {
     this.setState({ [evt.target.name]: evt.target.value });
-
   }
 
   handleSubmit(evt) {
     evt.preventDefault();
-    let id = uuid();
-    if(this.props.currentPost){
-      id = this.props.currentPost[0].id
-    }
-
-    this.props.addPost({
-      id: id,
+    let obj = {
       title: this.state.title,
       description: this.state.description,
       body: this.state.body
-    });
+    };
+    if(this.props.match.params.id) {
+      this.props.updatePost(this.props.match.params.id, obj);
+    } else {
+      this.props.addNewPost(obj);
+    }
     return this.props.history.push('/');
   }
 
   componentDidMount() {
-    if (this.props.currentPost) {
-      let currentPost = this.props.currentPost[0];
-      console.log(currentPost);
+    if (this.props.currentPost && this.props.match.params.id) {
+      let currentPost = this.props.currentPost;
       this.setState({
         title: currentPost.title,
         description: currentPost.description,
         body: currentPost.body
-      })
+      });
     }
-    console.log(this.props);
   }
 
   render() {
@@ -71,11 +67,11 @@ export default class NewPost extends Component {
             value={this.state.body}
             required />
           <br></br>
-          <button onClick={this.handleSubmit} className="button">Submit</button>
+          <button onClick={this.handleSubmit} className="button">Save</button>
           <button onClick={this.handleSubmit} className="button">Cancel</button>
         </form>
       </div>
-    )
+    );
   }
 }
 
