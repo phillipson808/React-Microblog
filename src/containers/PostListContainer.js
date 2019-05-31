@@ -1,6 +1,6 @@
 import { connect } from "react-redux";
 import PostList from "../components/PostList";
-import { getAllPostsFromAPI } from "../actions";
+import { getAllPostsFromAPI, votePost } from "../actions";
 
 function mapStateToProps(state) {
   return {
@@ -8,7 +8,7 @@ function mapStateToProps(state) {
   };
 }
 const mapDispatchToProps = {
-  getAllPostsFromAPI
+  getAllPostsFromAPI, votePost
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(PostList);

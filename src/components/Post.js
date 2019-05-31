@@ -20,6 +20,10 @@ export default class Post extends Component {
     this.props.getSinglePostFromAPI(this.props.match.params.id);
   }
 
+  componentWillUnmount(){
+    this.props.clearPost();
+  }
+
   deletePost() {
     this.props.deletePostFromAPI(this.props.match.params.id);
     this.props.history.push('/');
@@ -39,8 +43,10 @@ export default class Post extends Component {
     this.props.deleteCommentFromAPI(postId, commentId);
   }
 
+
   render() {
- 
+    console.log(this.props);
+
     let currentPost;
     let postPage = <h1>Loading...</h1>;
     if (this.props.currentPost) {
@@ -58,7 +64,10 @@ export default class Post extends Component {
             return <Comment removeComment={this.removeComment} postId={this.props.match.params.id} id={comment.id} key={id} {...comment} />;
           }
           )}
-          <CommentForm addComment={this.addComment} id={this.props.match.params.id}/>
+          <CommentForm addComment={this.addComment} id={this.props.match.params.id} />
+          <button onClick={() => this.props.votePost(currentPost.id, 'up')}>Up</button>
+          <button onClick={() => this.props.votePost(currentPost.id, 'down')}>Down</button>
+          <h5>{currentPost.votes}</h5>
         </div>;
     }
 

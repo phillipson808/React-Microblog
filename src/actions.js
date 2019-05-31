@@ -1,4 +1,4 @@
-import { ADD_COMMENT, DELETE_COMMENT, DELETE_POST, SAVE_POST, GET_POSTS, GET_POST, UPDATE_POST } from "./actionTypes";
+import { ADD_COMMENT, DELETE_COMMENT, DELETE_POST, SAVE_POST, GET_POSTS, GET_POST, UPDATE_POST, VOTE_POST, CLEAR_POST } from "./actionTypes";
 import axios from 'axios';
 
 const BASE_URL = 'http://localhost:5000/api/posts';
@@ -76,6 +76,26 @@ export function deleteCommentFromAPI(postId, commentId) {
   };
 }
 
+export function votePost(postId, direction) {
+  return async function (dispatch) {
+    try {
+      let res = await axios.post(`${BASE_URL}/${postId}/vote/${direction}`);
+      dispatch(vote({...res.data, id: postId}));
+    } catch (err) {
+      console.log("Weee", err);
+    }
+  };
+}
+
+
+export function clearPost() {
+  return {
+    type: CLEAR_POST
+  }
+}
+
+
+
 
 function getPosts(arrOfPost) {
   return {
@@ -118,3 +138,8 @@ function deleteComment(postId, commentId) {
   };
 }
 
+function vote(voteObj) {
+  return {
+    type: VOTE_POST, payload: voteObj
+  };
+}
